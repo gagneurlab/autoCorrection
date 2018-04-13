@@ -76,6 +76,8 @@ docs/_build
 .bootstrap
 .appveyor.token
 *.bak
+.ipynb_checkpoints
+saved_models
 
 # Rstudio
 .Rproj.user/

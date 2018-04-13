@@ -1,3 +1,4 @@
+import numpy as np
 from keras.layers import Input, Dense, Lambda, Multiply
 from keras.models import Model
 from .losses import NB
@@ -11,10 +12,12 @@ from keras import backend as K
 class Autoencoder():
     def __init__(self, encoding_dim=2, size=10000, optimizer=Adam(lr=0.001),
                  choose_autoencoder=False, choose_encoder=False,
-                 choose_decoder=False, epochs=1100, batch_size=None, seed = None):
+                 choose_decoder=False, epochs=1100, batch_size=None, seed=None):
         if seed is not None:
+            np.random.seed(seed)
             tf.set_random_seed(seed)
-            os.environ['PYTHONHASHSEED'] = seed
+            os.environ['PYTHONHASHSEED'] = str(seed)
+            tf.reset_default_graph()
             session_conf = tf.ConfigProto(intra_op_parallelism_threads=1, inter_op_parallelism_threads=1)
             sess = tf.Session(graph=tf.get_default_graph(), config=session_conf)
             K.set_session(sess)
