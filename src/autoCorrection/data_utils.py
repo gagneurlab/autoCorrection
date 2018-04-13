@@ -15,10 +15,11 @@ class OutlierData():
 class OutInjectionFC():
     def __init__(self, input_data, outlier_prob=10.0**-3,
                  fold=None, sample_names=None, gene_names=None,
-                 counts_file = "out_file"):
+                 counts_file = "out_file", seed = None):
 
         self.input_data=input_data
         self.outlier_prob=outlier_prob
+        self.seed = seed
         if fold is None:
             self.log2fc = self.computeLog2foldChange()
             self.fold = self.set_fold()
@@ -43,6 +44,8 @@ class OutInjectionFC():
     def get_outlier_data(self):
         injected = np.copy(self.input_data)
         data = self.input_data.flatten()
+        if self.seed is not None:
+            np.random.seed(self.seed)
         idx=np.random.choice((1,0), size=(np.multiply(self.input_data.shape[0],
                                                       self.input_data.shape[1])),
                                                       p=(self.outlier_prob,
@@ -175,31 +178,31 @@ class DataReader():
         pass
 
     def read_gtex_blood(self):
-        path = os.path.join(DIR,"data", "whole_blood_gtex.tsv")
+        path = os.path.join(DIR,"data", "whole_blood_gtex.tsv.gz")
         if not os.path.isfile(path):
             raise ValueError("The file " + str(path) + " does not exist.")
-        self.data = self.read_data(path, sep="\t")
+        self.data = self.read_data(path, sep=",")
         return self.data
 
     def read_gtex_skin(self):
-        path = os.path.join(DIR, "data", "skin_gtex.tsv")
+        path = os.path.join(DIR, "data", "skin_gtex.tsv.gz")
         if not os.path.isfile(path):
             raise ValueError("The file " + str(path) + " does not exist.")
-        self.data = self.read_data(path, sep=" ")
+        self.data = self.read_data(path, sep=",")
         return self.data
 
     def read_skin_small(self):
-        path = os.path.join(DIR, "data", "skin_small.tsv")
+        path = os.path.join(DIR, "data", "skin_small.tsv.gz")
         if not os.path.isfile(path):
             raise ValueError("The file " + str(path) + " does not exist.")
-        self.data = self.read_data(path, sep=" ")
+        self.data = self.read_data(path, sep=",")
         return self.data
 
     def read_gtex_several_tissues(self):
-        path=os.path.join(DIR, "data", "wbl_br1_br2_bst_hrt_skn.tsv")
+        path=os.path.join(DIR, "data", "wbl_br1_br2_bst_hrt_skn.tsv.gz")
         if not os.path.isfile(path):
             raise ValueError("The file " + str(path) + " does not exist.")
-        self.data = self.read_data(path, sep="\t")
+        self.data = self.read_data(path, sep=",")
         return self.data
 
     def read_data(self, path, sep=" "):
@@ -207,17 +210,22 @@ class DataReader():
         data = np.transpose(np.array(data_pd.values))
         return data
 
+    def read_data_pd(self, path, sep=" "):
+        data = pd.read_csv(path,  compression='infer', index_col=0, header=0, sep=sep)
+        return data
+
 
 class DataCooker():
     def __init__(self, counts, size_factors=None,
                  inject_outliers=True, inject_on_pred=False,
                  only_prediction=False, inj_method="OutInjectionFC",
-                 pred_counts=None, pred_sf=None):
-        self.counts=counts
-        self.inject_outliers=inject_outliers
+                 pred_counts=None, pred_sf=None, seed = None):
+        self.counts = counts
+        self.inject_outliers = inject_outliers
         self.inject_outliers_on_pred = inject_on_pred
         self.only_prediction = only_prediction
         self.inj_method = inj_method
+        self.seed = seed
         if size_factors is not None:
             self.sf = size_factors
         else:
@@ -235,7 +243,7 @@ class DataCooker():
     def inject(self, data):
         print("Using "+self.inj_method+" method!")
         if self.inj_method == "OutInjectionFC":
-            injected_outliers = OutInjectionFC(data)
+            injected_outliers = OutInjectionFC(data, seed=self.seed)
         else:
             raise ValueError("Please specify one of injection methods: 'OutInjectionFC', ...")
         return injected_outliers

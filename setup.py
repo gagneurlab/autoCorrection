@@ -25,7 +25,7 @@ def read(*names, **kwargs):
 
 setup(
     name='autoCorrection',
-    version='0.1.0',
+    version='0.2.0',
     license='MIT license',
     description='...',
     long_description='%s\n%s' % (
@@ -56,10 +56,12 @@ setup(
     keywords=[
         # eg: 'keyword1', 'keyword2', 'keyword3',
     ],
+    python_requires='>=3',
     install_requires=[
         'tensorflow',
         'keras',
         'h5py==2.8.0rc1',
+        'networkx==1.11',
         'numpy',
         'kopt',
         'scipy',
