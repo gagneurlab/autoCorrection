@@ -56,10 +56,12 @@ setup(
     keywords=[
         # eg: 'keyword1', 'keyword2', 'keyword3',
     ],
+    python_requires='>=3',
     install_requires=[
         'tensorflow',
         'keras',
         'h5py==2.8.0rc1',
+        'networkx==1.11',
         'numpy',
         'kopt',
         'scipy',
