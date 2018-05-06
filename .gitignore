@@ -1,0 +1,86 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+env/
+build/
+dist/
+downloads/
+eggs/
+*[-.]egg*/
+lib/
+lib64/
+parts/
+pyvenv*/
+sdist/
+var/
+venv*/
+wheelhouse/
+wheels/
+.installed.cfg
+*.manifest
+*.spec
+target
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+.tox
+.coverage*
+nosetests.xml
+coverage.xml
+htmlcov
+.pytest_cache/
+test1.json
+test1_weights.h5
+.cache
+nosetests.xml
+*.cover
+.hypothesis/
+
+# Translations
+*.mo
+*.pot
+
+# Mr Developer
+.mr.developer.cfg
+.project
+.pydevproject
+.idea
+*.iml
+*.komodoproject
+
+# Complexity
+output/*.html
+output/*/index.html
+
+# Sphinx
+docs/_build
+
+.DS_Store
+*~
+.*.sw[po]
+.build
+.ve
+.env
+.cache
+.pytest
+.bootstrap
+.appveyor.token
+*.bak
+.ipynb_checkpoints
+saved_models
+
+# Rstudio
+.Rproj.user/
+*.Rproj
+.Rproj.user
+.Rhistory
