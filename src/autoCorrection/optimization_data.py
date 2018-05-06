@@ -22,6 +22,6 @@ class OptimizationData():
                 counts = dr.read_data(self.data_path, self.sep)
         else:
             counts = dr.read_gtex_skin()
-        cook = DataCooker(counts, inject_on_pred=True)
+        cook = DataCooker(counts, inject_on_pred=True, seed=1234)
         data = cook.data("OutInjectionFC")
         return data

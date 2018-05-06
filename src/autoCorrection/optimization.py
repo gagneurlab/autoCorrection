@@ -12,6 +12,9 @@ import subprocess
 from kopt.utils import merge_dicts
 import pymongo
 import os
+#scope bug
+from hyperopt.pyll.base import scope
+
 
 def print_exp(exp_name):
     print("-" * 40 + "\nexp_name: " + exp_name)
@@ -190,9 +193,11 @@ class Optimization():
         else:
             pv = ParamValues(
                 lr=hp.loguniform("lr", np.log(1e-4), np.log(1e-3)),
-                q=(18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30),
-                epochs=(100, 120, 150, 170, 200, 250, 300, 400, 500),
-                batch=(16, 32, 50, 100, 128, 200)
+                q=scope.int(hp.qloguniform("q", np.log(10), np.log(100), 1)),
+                #q=(18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,35),
+                epochs=scope.int(hp.qloguniform("epochs", np.log(10), np.log(500), 10)),
+                #epochs=(100, 125, 150, 175, 200, 250, 300, 400, 500, 700),
+                batch=(4, 8, 16, 32, 64, 128, 256)
             )
 
         hyper_params = {
@@ -200,10 +205,12 @@ class Optimization():
             },
             "model": {
                 "lr": pv.lr,
-                "encoding_dim": hp.choice("encoding_dim", pv.q),  ##
+                #"encoding_dim": hp.choice("encoding_dim", pv.q),  ##
+                "encoding_dim": pv.q, 
             },
             "fit": {
-                "epochs": hp.choice("epochs", pv.epochs),  #
+                #"epochs": hp.choice("epochs", pv.epochs),  #
+                "epochs": pv.epochs,
                 "batch_size": hp.choice("batch_size", pv.batch)
             }
         }
@@ -213,4 +220,3 @@ class Optimization():
                     self.db_name, self.exp_name, self.ip, self.port, self.nr_of_trials,
                     self.nr_of_workers)
         run()
-

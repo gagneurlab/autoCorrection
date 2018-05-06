@@ -349,7 +349,7 @@ def _train_and_eval_single(train, valid, test, model,
               validation_data=valid[:2],
               epochs=epochs,
               sample_weight=sample_weight,
-              verbose=2,
+              verbose=2, shuffle = False,
               callbacks=[history])# + callbacks)
 
     # get history
