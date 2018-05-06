@@ -4,6 +4,7 @@ from .losses import NB
 from .layers import ConstantDispersionLayer
 from keras import losses
 import os
+import tensorflow as tf
 from keras import backend as K
 
 class Autoencoder():
@@ -37,7 +38,7 @@ class Autoencoder():
         self.input_layer = Input(shape=(self.size,), name='inp')
         self.pseudoCount = Lambda(self.pseudoCountLayer, output_shape=(self.size,), name="pseudoCount")(self.input_layer)
         self.sf_layer = Input(shape=(self.size,), name='sf')
-        self.normalized = Multiply()([self.pseudoCount, self.sf_layer]) 
+        self.normalized = Multiply()([self.pseudoCount, self.sf_layer])
         self.logcounts = Lambda(self.Loglayer, output_shape=(self.size,), name="logCounts")(self.normalized)
         encoded = Dense(self.encoding_dim, name='encoder', use_bias=True)(self.logcounts)
         decoded = Dense(self.size, name='decoder', use_bias=True)(encoded)
