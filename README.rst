@@ -16,9 +16,9 @@ Overview
     :target: https://pypi.python.org/pypi/autoCorrection
 
 
-.. |Build| image::  https://travis-ci.org/gagneurlab/autoCorrect.svg?branch=master
+.. |Build| image::  https://travis-ci.org/gagneurlab/autoCorrection.svg?branch=master
     :alt: Build status
-    :target: https://travis-ci.org/gagneurlab/autoCorrect
+    :target: https://travis-ci.org/gagneurlab/autoCorrection
 
 
 .. |wheel| image:: https://img.shields.io/pypi/wheel/autoCorrection.svg
@@ -27,7 +27,7 @@ Overview
 
 .. |License| image:: https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000
     :alt: License MIT
-    :target: https://github.com/gagneurlab/autoCorrect/blob/master/LICENSE
+    :target: https://github.com/gagneurlab/autoCorrection/blob/master/LICENSE
 
 
 .. end-badges

@@ -31,9 +31,11 @@ class DummyCorrector(Corrector):
 class AECorrector(Corrector):
     def __init__(self, model_name=None, model_directory=None, verbose=1,
                  param_path=OPT_PARAM_PATH, param_exp_name=None, denoisingAE=True,
-                 save_model=True, epochs=250, encoding_dim=23, lr=0.00068, batch_size=None):
+                 save_model=True, epochs=250, encoding_dim=23, lr=0.00068, batch_size=None,
+                 seed = None):
         self.denoisingAE = denoisingAE
         self.save_model = save_model
+        self.seed = seed
         if model_name is None:
             self.model_name = "model"
         else:
@@ -71,20 +73,18 @@ class AECorrector(Corrector):
                   "' saved. Only predict is not possible!")
         self.loader = DataCooker(counts, size_factors,
                                  inject_outliers=self.denoisingAE,
-                                 only_prediction=only_predict)
+                                 only_prediction=only_predict, seed=self.seed)
         self.data = self.loader.data()
         if not only_predict:
             self.ae = Autoencoder(choose_autoencoder=True,
                                   encoding_dim=self.encoding_dim,
-                                  size=counts.shape[1])
+                                  size=counts.shape[1], seed=self.seed)
             self.ae.model.compile(optimizer=Adam(lr=self.lr), loss=self.ae.loss)
             self.ae.model.fit(self.data[0][0], self.data[0][1],
-                                epochs=self.epochs,
-                                batch_size=self.batch_size,
-                                shuffle=True,
-                                validation_data=(self.data[1][0], self.data[1][1]),
-                                verbose=self.verbose
-                               )
+                              epochs=self.epochs, batch_size=self.batch_size,
+                              shuffle = False if self.seed is not None else True,
+                              validation_data=(self.data[1][0], self.data[1][1]),
+                              verbose=self.verbose)
             model = self.ae.model
             if self.save_model:
                 os.makedirs(self.directory, exist_ok=True)

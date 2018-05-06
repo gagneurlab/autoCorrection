@@ -2,18 +2,20 @@ from __future__ import absolute_import
 import tensorflow as tf
 import numpy as np
 
+#
+# Constant values
+# 
+THETA = [0.0]
 
 def _nan2inf(x):
     return tf.where(tf.is_nan(x), tf.zeros_like(x)+np.inf, x)
 
 
 class NB(object):
-    def __init__(self, theta=None, theta_init=[0.0],
-                 scope='nbinom_loss/', scale_factor=1.0, debug=False, out_idx=None):
+    def __init__(self, theta=None, scope='nbinom_loss/', scale_factor=1.0, 
+                 debug=False, out_idx=None):
 
         # for numerical stability
-        self.eps = 1e-10
-        self.lambd = 1e-3
         self.scale_factor = scale_factor
         self.debug = debug
         self.scope = scope
@@ -23,8 +25,7 @@ class NB(object):
         with tf.name_scope(self.scope):
             # a variable may be given by user or it can be created here
             if theta is None:
-                theta = tf.Variable(theta_init, dtype=tf.float32,
-                                    name='theta')
+                theta = tf.Variable(THETA, dtype=tf.float32, name='theta')
 
             # to keep dispersion always non-negative
             self.theta = tf.nn.softplus(theta)
