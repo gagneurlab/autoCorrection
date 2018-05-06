@@ -96,7 +96,7 @@ class TrainTestPreparation():
         self.rescale_per_gene = rescale_per_gene
         self.rescale_per_sample = rescale_per_sample
         self.rescale_by_global_median = rescale_by_global_median
-        self.data = self.clip_high_values()
+        #self.data = self.clip_high_values()
         self.set_sf()
         if no_rescaling:
             self.splited_data = self.split_data(self.sf)
@@ -217,7 +217,7 @@ class DataReader():
 
 class DataCooker():
     def __init__(self, counts, size_factors=None,
-                 inject_outliers=True, inject_on_pred=False,
+                 inject_outliers=True, inject_on_pred=True,
                  only_prediction=False, inj_method="OutInjectionFC",
                  pred_counts=None, pred_sf=None, seed = None):
         self.counts = counts
@@ -250,38 +250,13 @@ class DataCooker():
 
     def get_count_data(self, counts, sf):
         count_data = TrainTestPreparation(data=counts,sf=sf,
-                                  no_rescaling=False,
-                                  no_splitting=True)
+                                          no_rescaling=False,
+                                          no_splitting=True)
         return count_data
 
-    def prepare_rescaled(self, count_data, sf):
-        rescaled = TrainTestPreparation(
-                     data=count_data.processed_data.data, sf=sf,
-                     no_rescaling=False, no_splitting=False,
-                     divide_by_sf=True)
-        return rescaled
-
-    def prepare_simple(self, count_data):
-        rescaled_simple = TrainTestPreparation(
-                     data=count_data.processed_data.data,
-                     sf=count_data.processed_data.size_factor,
-                     no_rescaling=True, no_splitting=False)
-        return rescaled_simple
-
     def prepare_noisy(self, count_data):
-        if self.inject_outliers:
-            inj = self.inject(count_data.processed_data.data)
-            noisy_train_test = TrainTestPreparation(
-                             data=inj.outlier_data.data_with_outliers,
-                             sf=count_data.processed_data.size_factor,
-                             no_rescaling=True, no_splitting=False)
-        else:
-            noisy_train_test = self.prepare_simple(count_data)
-        return noisy_train_test
-
-    def prepare_pred(self, pred_count_data):
-        pred_noisy = self.inject(pred_count_data.processed_data.data)
-        return pred_noisy
+        noisy = self.inject(count_data.processed_data.data)
+        return noisy
 
     def data(self, inj_method="OutInjectionFC"):
         self.inj_method=inj_method
@@ -290,7 +265,7 @@ class DataCooker():
         if self.inject_outliers_on_pred:
             if not np.array_equal(self.counts,self.pred_counts):
                 pred_count_data = self.get_count_data(self.pred_counts,self.pred_sf)
-            pred_noisy = self.prepare_pred(pred_count_data)
+            pred_noisy = self.prepare_noisy(pred_count_data)
             x_2nd_noise_test = {'inp': pred_noisy.outlier_data.data_with_outliers,
                                 'sf': pred_count_data.processed_data.size_factor}
             y_true_idx_test = np.stack([self.pred_counts.astype(int), pred_noisy.outlier_data.index])
@@ -300,14 +275,15 @@ class DataCooker():
                                 'sf': count_data.processed_data.size_factor}
             y_true_idx_test = None
         if not self.only_prediction:
-            simple_train_test = self.prepare_simple(count_data)
-            noisy_train_test = self.prepare_noisy(count_data)
-            x_noisy_train = {'inp': noisy_train_test.splited_data.train,
-                             'sf': noisy_train_test.splited_data.size_factor_train}
-            x_train = simple_train_test.splited_data.train
-            x_noisy_valid = {'inp': noisy_train_test.splited_data.test,
-                             'sf': noisy_train_test.splited_data.size_factor_test}
-            x_valid = simple_train_test.splited_data.test
+            data = pred_noisy.outlier_data.data_with_outliers
+            count_data = self.get_count_data(data, self.sf)
+            count_noisy = self.prepare_noisy(count_data)
+            x_noisy_train = {'inp': count_noisy.outlier_data.data_with_outliers,
+                             'sf': count_data.processed_data.size_factor}
+            x_train = count_data.processed_data.data
+            x_noisy_valid = {'inp': count_noisy.outlier_data.data_with_outliers,
+                             'sf': count_data.processed_data.size_factor}
+            x_valid = count_data.processed_data.data
             cooked_data = (x_noisy_train, x_train),(x_noisy_valid, x_valid), (x_2nd_noise_test, y_true_idx_test)
         else:
             cooked_data = (None, None),(None, None), (x_2nd_noise_test, None)
