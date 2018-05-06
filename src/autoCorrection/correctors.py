@@ -1,18 +1,13 @@
 from abc import abstractmethod
 from .autoencoder import Autoencoder
+from .default_values import *
 from .data_utils import DataCooker
 from .layers import ConstantDispersionLayer
-from keras.optimizers import Adam, RMSprop
+from keras.optimizers import *
 from keras.models import model_from_json
 import numpy as np
 import json
 import os
-dir, filename = os.path.split(__file__)
-MODEL_PATH = os.path.join(dir, "saved_models")
-os.makedirs(MODEL_PATH, exist_ok=True)
-OPT_PARAM_PATH = os.path.join(dir, "saved_models", "best")
-os.makedirs(OPT_PARAM_PATH, exist_ok=True)
-
 
 class Corrector():
     @abstractmethod
@@ -31,8 +26,9 @@ class DummyCorrector(Corrector):
 class AECorrector(Corrector):
     def __init__(self, model_name=None, model_directory=None, verbose=1,
                  param_path=OPT_PARAM_PATH, param_exp_name=None, denoisingAE=True,
-                 save_model=True, epochs=250, encoding_dim=23, lr=0.00068, batch_size=None,
-                 seed = None):
+                 save_model=True, epochs=DEFAULT_EPOCHS, encoding_dim=DEFAULT_ENCODING_DIM,
+                 lr=DEFAULT_LEARNING_RATE, batch_size=DEFAULT_BATCH_SIZE,
+                 seed=None):
         self.denoisingAE = denoisingAE
         self.save_model = save_model
         self.seed = seed
@@ -76,9 +72,9 @@ class AECorrector(Corrector):
                                  only_prediction=only_predict, seed=self.seed)
         self.data = self.loader.data()
         if not only_predict:
-            self.ae = Autoencoder(choose_autoencoder=True,
-                                  encoding_dim=self.encoding_dim,
-                                  size=counts.shape[1], seed=self.seed)
+            self.ae = Autoencoder(coder_type='autoencoder', 
+                                  size=counts.shape[1], seed=self.seed,
+                                  encoding_dim=self.encoding_dim)
             self.ae.model.compile(optimizer=Adam(lr=self.lr), loss=self.ae.loss)
             self.ae.model.fit(self.data[0][0], self.data[0][1],
                               epochs=self.epochs, batch_size=self.batch_size,
