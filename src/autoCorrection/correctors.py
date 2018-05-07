@@ -99,7 +99,12 @@ class AECorrector(Corrector):
             custom_objects={'ConstantDispersionLayer': ConstantDispersionLayer})
             model.load_weights(weights_file)
             print("Model loaded from disk!")
-        self.corrected = model.predict(self.data[2][0])
+        loader = DataCooker(counts, size_factors,
+                            inject_on_pred=False,
+                            only_prediction=True,
+                            seed=self.seed)
+        data = loader.data()
+        self.corrected = model.predict(data[2][0])
         return self.corrected
 
 
