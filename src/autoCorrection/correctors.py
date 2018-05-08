@@ -24,8 +24,8 @@ class DummyCorrector(Corrector):
 
 
 class AECorrector(Corrector):
-    def __init__(self, model_name=None, model_directory=None, verbose=1,
-                 param_path=OPT_PARAM_PATH, param_exp_name=None, denoisingAE=True,
+    def __init__(self, model_name=None, model_directory=None, verbose=True,
+                 param_path=OPT_PARAM_PATH, param_exp_name=None, denoisingAE=False,
                  save_model=True, epochs=DEFAULT_EPOCHS, encoding_dim=DEFAULT_ENCODING_DIM,
                  lr=DEFAULT_LEARNING_RATE, batch_size=DEFAULT_BATCH_SIZE,
                  seed=None):
@@ -40,7 +40,10 @@ class AECorrector(Corrector):
             self.directory = MODEL_PATH
         else:
             self.directory = model_directory
-        self.verbose = verbose
+        if verbose:
+            self.verbose = 2
+        else:
+            self.verbose = 0
         if param_exp_name is not None:
             path = os.path.join(param_path,param_exp_name+"_best.json")
             metrics = json.load(open(path))
@@ -68,7 +71,7 @@ class AECorrector(Corrector):
             raise ValueError("There is no model "+str(model_file)+" or no weigthts "+str(weights_file)+
                   "' saved. Only predict is not possible!")
         self.loader = DataCooker(counts, size_factors,
-                                 inject_outliers=self.denoisingAE,
+                                 inject_outliers=self.denoisingAE, inject_on_pred=False,
                                  only_prediction=only_predict, seed=self.seed)
         self.data = self.loader.data()
         if not only_predict:
