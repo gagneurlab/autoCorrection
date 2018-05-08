@@ -39,7 +39,7 @@ class OutlierRecall():
 
     def get_recall(self, outlier_table):
         tn, fp, fn, tp = confusion_matrix(outlier_table[:self.threshold,2], outlier_table[:self.threshold,1]).ravel()
-        recall = tp / (tp + fp)
+        recall = tp / (tp + fn)
         return recall
 
 
