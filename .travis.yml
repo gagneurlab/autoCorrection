@@ -2,34 +2,33 @@ language: python
 sudo: required
 dist: trusty
 cache: pip
-
 matrix:
   include:
-    - python: 3.4
-    - python: 3.5
-    - python: 3.6
-
+  - python: 3.4
+  - python: 3.5
+  - python: 3.6
 install:
-  # setup conda
-  # Used from https://conda.io/docs/user-guide/tasks/use-conda-with-travis-ci.html
-  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
-  - bash miniconda.sh -b -p $HOME/miniconda
-  - export PATH="$HOME/miniconda/bin:$PATH"
-  - hash -r
-  - conda config --set always_yes yes --set changeps1 no
-  - conda update -q conda
-  - conda info -a
-
-  # test-environment
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION pytest
-  - source activate test-environment
-  - python --version
-  - pip install --upgrade pip
-  - pip --version
-
-  # install the repository
-  - pip install '.'
-
+- wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+- bash miniconda.sh -b -p $HOME/miniconda
+- export PATH="$HOME/miniconda/bin:$PATH"
+- hash -r
+- conda config --set always_yes yes --set changeps1 no
+- conda update -q conda
+- conda info -a
+- conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION pytest
+- source activate test-environment
+- python --version
+- pip install --upgrade pip
+- pip --version
+- pip install '.'
 script:
-  - PYTHONPATH=$PWD:$PYTHONPATH py.test tests/
-
+- PYTHONPATH=$PWD:$PYTHONPATH py.test tests/
+deploy:
+  provider: pypi
+  distributions: sdist bdist_wheel
+  user: matusevi
+  password:
+    secure: l4NjxJokWHYBDnB6JvBjMX9yW49GusWRZeaQysu1mL31AXEUfuRu/1znlP2neCIGALnao4FPL7dr9dmh1pGrgV0OumtgzpqpKwQ1GeTUw9HJ7Jv8M2Ts2IFSW5DZLmjRjCxrgrmy5N4WUOGiwoR4mhAlZarn542LjhV2ZVUZFcGWJvDRjLaCg/ONgT6oe3+zawHgYMy7QA4m0JhYolHZqhdmGWbLUyCIaKH4VKluvk1x5Ss/sXL+lXnoorLfytcFiULPkLpLCv7Y4nAe4j/XhXyl1j3MSAEuL3bMy77wZGMLXYJAJf7JanlOoy+IGmCPLgYxqmIHsCV4tUkrELzMRgI4S3ew6awR1+titgWPFvhlNhiJTUOjjkMgAa36vvNrrMhkA7MU9VHrmbkAuj/FmaN1X8CLKVXobo+bsTGDOO0mzJfrZFNrwT9MgRLsxovJahipfj9fBFU6kjw2sLpxIVYCHPI/d/9ev4M7fytlL9gdbB9Q8lAEYfJAtAKOU6W3AdxMx6WQifaYKR/rxNC8lz/R4o+bQg9a2qdgIDZy0FCbGHj+Wziu9W8b3FA3dYoQnfj1dXy5NdGGCY1SIK6A0MOZa1+BId+kbhdBlwir9XEOLvr8gRCDc2ejgQ/74JqxhdoQC37ivue94z64b+T3nGcq9gacjBKFjcw50ZqRcKc=
+  on:
+    tags: true
+    repo: matuseviciute/autoCorrection
