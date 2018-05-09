@@ -22,12 +22,3 @@ install:
 - pip install '.'
 script:
 - PYTHONPATH=$PWD:$PYTHONPATH py.test tests/
-deploy:
-  provider: pypi
-  distributions: sdist
-  user: matusevi
-  password:
-    secure: Q76XYWF6J2uV5omiFVmnqdsSLktieACiBIMyeSOb3MbUobzbXHIiY/y81ZvcB5NjUIPoi2X33cSzGrr7ahB7Reu0xpuevrSk6KD1Fx4zHtzyYUfBlyay6VX4WhPct9KrWEKkBeYZGhaCAL/g4E3mYJYJBG6onZyopvZKF+jTlsQ5iTpITQfEDIEq5Q0VHfgG1rTMxjfgqghVCEVLf69qxKUypXAmd0wFHv7G11gvtRLRiMBAogMBCrdP21t+yGRmUar+sCr1EV4DwvJX69a7ZTKLe4CkToANno/xhOHrG9ZN6asBRamlwajjzateQhWoUa9SljmNwaqWR9XbHBYReEFiNyxmqKfWjuTQcVafw0lf1m2nacv6gh0Ia9oToEG5j61mfBNVKnVMVfSbPxlsYDfhTYeoIIAXxE7irN5lknzoqYj9/Acgd9QEXmHaZU/bhmTnazF65yGeZVww2gPsmlvGzZIAQp5RPM5UYgH7DQxWpUOi+hIW/YiSVFy+dDw0QMMk1ZgHPzUvTzWjLeJiUFTDLA6FGyQd/mwAOs3p8RiDVptOPDDqtqoaBetDXNl50ILrukupxjG7zpjEt3tYLKdiI4ko+3UeCuNzfX16OEv8wzlJ/dyjhqM+eCPeySFF4T/o5KLBqReIUO+Ii38oOo2TjKwUArVnwCwzfdl8tN4=
-  on:
-    tags: true
-    repo: matuseviciute/autoCorrection
