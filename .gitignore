@@ -83,3 +83,5 @@ docs/_build
 *.Rproj
 .Rproj.user
 .Rhistory
+
+miniconda.sh
